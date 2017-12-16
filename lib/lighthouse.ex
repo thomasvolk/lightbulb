@@ -1,8 +1,8 @@
 defmodule Lighthouse do
   use Application
 
-  def start(_type, {port, interval}) do
-    Lighthouse.Supervisor.start_link({port, interval})
+  def start(_type, []) do
+    Lighthouse.Supervisor.start_link()
   end
 end
 

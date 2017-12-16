@@ -31,6 +31,8 @@ use Mix.Config
 
 config :lighthouse,
    server: :true,
-   broadcast: :true
+   broadcast: :true,
+   udp_port: 9998,
+   interval: 5000
 
 import_config "#{Mix.env}.exs"

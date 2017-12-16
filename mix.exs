@@ -13,7 +13,7 @@ defmodule Lighthouse.Mixfile do
 
   def application do
     [
-      mod: {Lighthouse, {9998, 5000}},
+      mod: {Lighthouse, []},
       extra_applications: [:logger]
     ]
   end
