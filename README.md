@@ -9,7 +9,7 @@ The package can be installed by adding `lighthouse` to your list of dependencies
 ```elixir
 def deps do
   [
-    {:lighthouse, "~> 0.1.0"}
+    {:lighthouse, git: "https://github.com/thomasvolk/lighthouse.git", tag: "master"}
   ]
 end
 ```
