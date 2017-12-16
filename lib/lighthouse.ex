@@ -1,18 +1,11 @@
 defmodule Lighthouse do
-  @moduledoc """
-  Documentation for Lighthouse.
-  """
+  use Application
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Lighthouse.hello
-      :world
-
-  """
-  def hello do
-    :world
+  def start(_type, {port, interval}) do
+    Lighthouse.Supervisor.start_link({port, interval})
   end
+end
+
+defmodule Lighthouse.IpAddress do
+  def to_string(ip), do: Kernel.to_string(:inet.ntoa(ip))
 end
