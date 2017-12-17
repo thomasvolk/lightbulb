@@ -4,23 +4,33 @@ defmodule SchedulerTest do
   doctest Lighthouse.Scheduler
 
   setup do
-    {:ok, pid} = start_supervised SchedulerTest.Counter
+    {:ok, pid} = start_supervised({SchedulerTest.Counter, self()})
     %{conter_pid: pid}
   end
 
   test "the Lighthouse.Scheduler should schedule method calls", %{conter_pid: _cpid} do
-    {:ok, _pid} = Lighthouse.Scheduler.start_link({10, &SchedulerTest.Counter.increase/0 })
-    :timer.sleep 30
-    assert SchedulerTest.Counter.get() == 2
+    {:ok, _pid} = Lighthouse.Scheduler.start_link({5, &SchedulerTest.Counter.increase/0 })
+    result = receive do
+      10 ->
+        :ok
+    after
+      2_000 ->
+        assert false, "timeout! expected count not reached"
+    end
+    assert result == :ok
   end
 end
 
 defmodule SchedulerTest.Counter do
   use Agent
 
-  def start_link(_opts), do: Agent.start_link(fn -> 0 end, name: __MODULE__)
+  def start_link(receiver), do: Agent.start_link(fn -> {0, receiver} end, name: __MODULE__)
 
-  def get(), do: Agent.get(__MODULE__, fn c -> c end)
-
-  def increase(), do: Agent.update(__MODULE__, fn c -> c + 1 end)
+  def increase() do
+    Agent.update(__MODULE__, fn {c, receiver} ->
+      new_count = c + 1
+      send(receiver, new_count)
+      {new_count, receiver}
+    end)
+  end
 end
