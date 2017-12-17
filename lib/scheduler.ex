@@ -4,7 +4,7 @@ defmodule Lighthouse.Scheduler do
   require Logger
 
   def start_link({interval, func}) do
-    GenServer.start_link(__MODULE__, {interval, func}, [name: __MODULE__])
+    GenServer.start_link(__MODULE__, {interval, func})
   end
 
   defp schedule_next(interval) do
