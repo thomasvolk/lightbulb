@@ -11,8 +11,12 @@ defmodule Lighthouse.Registry do
     GenServer.call(__MODULE__, {:get_nodes, expiration_interval})
   end
 
-  def listen() do
-    GenServer.call(__MODULE__, {:listen_to})
+  def subscribe() do
+    GenServer.call(__MODULE__, {:subscribe})
+  end
+
+  def unsubscribe() do
+    GenServer.call(__MODULE__, {:unsubscribe})
   end
 
   def register_node(ip) do
@@ -32,9 +36,14 @@ defmodule Lighthouse.Registry do
     {:reply, filtered_nodes, state}
   end
 
-  def handle_call({:listen_to}, {pid, _ref}, {nodes, listener}) do
+  def handle_call({:subscribe}, {pid, _ref}, {nodes, listener}) do
     new_listener = [ pid | listener ] |> Enum.uniq |> Enum.filter(&Process.alive?/1)
-    {:reply, :ok, { nodes, new_listener } }
+    {:reply, length(new_listener) > length(listener), { nodes, new_listener } }
+  end
+
+  def handle_call({:unsubscribe}, {in_pid, _ref}, {nodes, listener}) do
+    new_listener = listener |> Enum.filter(fn pid -> pid != in_pid end) |> Enum.filter(&Process.alive?/1)
+    {:reply, length(new_listener) < length(listener), { nodes, new_listener } }
   end
 
   def handle_cast({:register_node, ip}, {nodes, listener}) do
