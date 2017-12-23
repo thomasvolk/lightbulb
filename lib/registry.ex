@@ -3,12 +3,12 @@ defmodule Lighthouse.Registry do
   use GenServer
   require Logger
 
-  def start_link(state) do
-    GenServer.start_link(__MODULE__, state, [name: __MODULE__])
+  def start_link(node_expiration_interval) do
+    GenServer.start_link(__MODULE__, {node_expiration_interval}, [name: __MODULE__])
   end
 
-  def get_nodes(expiration_interval \\ 30000) do
-    GenServer.call(__MODULE__, {:get_nodes, expiration_interval})
+  def get_nodes() do
+    GenServer.call(__MODULE__, {:get_nodes})
   end
 
   def subscribe() do
@@ -19,36 +19,52 @@ defmodule Lighthouse.Registry do
     GenServer.call(__MODULE__, {:unsubscribe})
   end
 
+  def cleanup() do
+    GenServer.cast(__MODULE__, {:cleanup})
+  end
+
   def register_node(ip) do
     GenServer.cast(__MODULE__, {:register_node, ip})
   end
 
-  def init(state) do
-    {:ok, {state, []} }
+  def init({node_expiration_interval}) do
+    {:ok, {Map.new, node_expiration_interval, []} }
   end
 
   def filter_expired(nodes, expiration_interval) do
     nodes |> Enum.filter( fn {_k, v} -> DateTime.diff(DateTime.utc_now(), v, :milliseconds) <= expiration_interval end) |> Map.new
   end
 
-  def handle_call({:get_nodes, expiration_interval}, _form, {nodes, _listener} = state) do
-    filtered_nodes = filter_expired(nodes, expiration_interval)
-    {:reply, filtered_nodes, state}
+  defp publish_event(listener, nodes, new_nodes) do
+    delta = map_size(nodes) - map_size(new_nodes)
+    if delta != 0 do
+      listener |> Enum.map(fn pid -> send(pid, {:updated, new_nodes}) end)
+    end
   end
 
-  def handle_call({:subscribe}, {pid, _ref}, {nodes, listener}) do
+  def handle_call({:get_nodes}, _form, {nodes, _node_expiration_interval, _listener} = state) do
+    {:reply, nodes, state}
+  end
+
+  def handle_call({:subscribe}, {pid, _ref}, {nodes, node_expiration_interval, listener}) do
     new_listener = [ pid | listener ] |> Enum.uniq |> Enum.filter(&Process.alive?/1)
-    {:reply, length(new_listener) > length(listener), { nodes, new_listener } }
+    {:reply, length(new_listener) > length(listener), { nodes, node_expiration_interval, new_listener } }
   end
 
-  def handle_call({:unsubscribe}, {in_pid, _ref}, {nodes, listener}) do
+  def handle_call({:unsubscribe}, {in_pid, _ref}, {nodes, node_expiration_interval, listener}) do
     new_listener = listener |> Enum.filter(fn pid -> pid != in_pid end) |> Enum.filter(&Process.alive?/1)
-    {:reply, length(new_listener) < length(listener), { nodes, new_listener } }
+    {:reply, length(new_listener) < length(listener), { nodes, node_expiration_interval, new_listener } }
   end
 
-  def handle_cast({:register_node, ip}, {nodes, listener}) do
+  def handle_cast({:cleanup}, {nodes, node_expiration_interval, listener}) do
+    filtered_nodes = filter_expired(nodes, node_expiration_interval)
+    publish_event(listener, nodes, filtered_nodes)
+    {:noreply, { filtered_nodes, node_expiration_interval, listener } }
+  end
+
+  def handle_cast({:register_node, ip}, {nodes, node_expiration_interval, listener}) do
     new_nodes = Map.put(nodes, ip, DateTime.utc_now())
-    listener |> Enum.map(fn pid ->  send(pid, {:update, new_nodes}) end)
-    {:noreply, { new_nodes, listener } }
+    publish_event(listener, nodes, new_nodes)
+    {:noreply, { new_nodes, node_expiration_interval, listener } }
   end
 end
