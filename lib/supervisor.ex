@@ -27,8 +27,7 @@ defmodule Lighthouse.Supervisor do
     node_expiration_interval = Application.get_env(:lighthouse, :node_expiration_interval, 30000)
     registry_cleanup_interval = Application.get_env(:lighthouse, :registry_cleanup_interval, 2000)
 
-    worker = [{Lighthouse.Registry, node_expiration_interval},
-              {Lighthouse.Scheduler, {registry_cleanup_interval, &Lighthouse.Registry.cleanup/0}} ]
+    worker = [{Lighthouse.Registry, {node_expiration_interval, registry_cleanup_interval}} ]
       |> add_server_worker(udp_port)
       |> add_broadcast_worker(udp_port)
     Supervisor.init(worker, strategy: :one_for_one)

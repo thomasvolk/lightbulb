@@ -26,7 +26,7 @@ $ iex -S mix
 
 [info]  start Elixir.Lighthouse.Scheduler interval=5000 func=&Lighthouse.Ip4UdpBroadcast.send/0
 
-iex(1)> Lighthouse.Registry.get_nodes()
+iex(1)> Lighthouse.get_nodes()
 %{{10, 2, 1, 210} => #DateTime<2017-12-16 17:18:51.898192Z>,
   {10, 2, 1, 211} => #DateTime<2017-12-16 17:18:51.898502Z>,
   {10, 2, 1, 212} => #DateTime<2017-12-16 17:18:53.461900Z>}
