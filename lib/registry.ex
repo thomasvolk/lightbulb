@@ -57,11 +57,11 @@ defmodule Lighthouse.Registry do
     {:reply, length(new_listener) < length(listener), { nodes, node_expiration_interval, registry_cleanup_interval, new_listener } }
   end
 
-  def handle_info(:cleanup,{nodes, node_expiration_interval, registry_cleanup_interval, listener} = state) do
+  def handle_info(:cleanup, {nodes, node_expiration_interval, registry_cleanup_interval, listener}) do
     filtered_nodes = filter_expired(nodes, node_expiration_interval)
     publish_event(listener, nodes, filtered_nodes)
     Process.send_after(self(), :cleanup, registry_cleanup_interval)
-    {:noreply, state }
+    {:noreply, { filtered_nodes, node_expiration_interval, registry_cleanup_interval, listener } }
   end
 
   def handle_cast({:register_node, ip}, {nodes, node_expiration_interval, registry_cleanup_interval, listener}) do
