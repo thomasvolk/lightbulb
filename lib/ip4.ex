@@ -13,8 +13,9 @@ defmodule Lighthouse.Ip4UdpServer do
   end
 
   def handle_info({:udp, _socket, ip, _port, data}, state) do
-     Logger.debug "receive message '#{data}' from #{Lighthouse.IpAddress.to_string(ip)}"
-     Lighthouse.Registry.register_node(ip, data)
+    msg = to_string(data)
+    Logger.debug "receive message '#{msg}' from #{Lighthouse.IpAddress.to_string(ip)}"
+    Lighthouse.Registry.register_node(ip, msg)
     {:noreply, state}
   end
 
