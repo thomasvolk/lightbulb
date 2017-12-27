@@ -16,9 +16,7 @@ defmodule Lighthouse.Supervisor do
       interval = Application.get_env(:lighthouse, :broadcast_interval, 10000)
       payload = Application.get_env(:lighthouse, :broadcast_playload, "lighthouse::node")
       broadcast_address = Application.get_env(:lighthouse, :broadcast_address, "255.255.255.255")
-      worker ++ [
-        {Lighthouse.Ip4UdpBroadcast, {udp_port, payload, broadcast_address}},
-        {Lighthouse.Scheduler, {interval, &Lighthouse.Ip4UdpBroadcast.send/0}} ]
+      worker ++ [ {Lighthouse.Ip4UdpBroadcast, {udp_port, payload, broadcast_address, interval}} ]
     else
       worker
     end

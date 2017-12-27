@@ -31,19 +31,17 @@ defmodule Lighthouse.Ip4UdpBroadcast do
     GenServer.start_link(__MODULE__, state, [name: __MODULE__])
   end
 
-  def send() do
-    GenServer.cast(__MODULE__, :broadcast)
-  end
-
-  def init({port, payload, address}) do
+  def init({port, payload, address, interval}) do
     Logger.info "start #{__MODULE__} port=#{port}"
     {:ok, socket} = :gen_udp.open(0, [{:broadcast, true}])
-    {:ok, {socket, {port, payload, address} } }
+    Process.send_after(self(), :broadcast, interval)
+    {:ok, {socket, {port, payload, address, interval} } }
   end
 
-  def handle_cast(:broadcast, {socket, {port, payload, address}} = state) do
+  def handle_info(:broadcast, {socket, {port, payload, address, interval}} = state) do
     Logger.debug "send broadcast to #{address}"
     :gen_udp.send(socket, to_charlist(address), port, payload)
+    Process.send_after(self(), :broadcast, interval)
     {:noreply, state}
   end
 end
