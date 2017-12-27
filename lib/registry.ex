@@ -23,16 +23,16 @@ defmodule Lighthouse.Registry do
     GenServer.cast(__MODULE__, {:cleanup})
   end
 
-  def register_node(ip) do
-    GenServer.cast(__MODULE__, {:register_node, ip})
+  def register_node(ip, data) do
+    GenServer.cast(__MODULE__, {:register_node, ip, data})
   end
 
   def filter_expired(nodes, expiration_interval) do
-    nodes |> Enum.filter( fn {_k, v} -> DateTime.diff(DateTime.utc_now(), v, :milliseconds) <= expiration_interval end) |> Map.new
+    nodes |> Enum.filter( fn {_k, {_d, date}} -> DateTime.diff(DateTime.utc_now(), date, :milliseconds) <= expiration_interval end) |> Map.new
   end
 
   defp to_node_list(nodes) do
-    Map.keys(nodes) |> Enum.sort
+    nodes |> Map.to_list |> Enum.map(fn {ip, {data, _time}} -> {ip, data} end ) |> Enum.sort
   end
 
   defp publish_event(listener, nodes, new_nodes) do
@@ -66,8 +66,8 @@ defmodule Lighthouse.Registry do
     {:noreply, { filtered_nodes, listener, node_lifespan } }
   end
 
-  def handle_cast({:register_node, ip}, {nodes, listener, node_lifespan}) do
-    new_nodes = Map.put(nodes, ip, DateTime.utc_now())
+  def handle_cast({:register_node, ip, data}, {nodes, listener, node_lifespan}) do
+    new_nodes = Map.put(nodes, ip, {data, DateTime.utc_now()})
     Process.send_after(self(), :cleanup, node_lifespan + 10)
     publish_event(listener, nodes, new_nodes)
     {:noreply, { new_nodes, listener, node_lifespan } }
