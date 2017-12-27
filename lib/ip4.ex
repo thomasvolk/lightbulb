@@ -12,8 +12,8 @@ defmodule Lighthouse.Ip4UdpServer do
     {:ok, {socket, port } }
   end
 
-  def handle_info({:udp, _socket, ip, _port, _data}, state) do
-     Logger.debug "receive message from #{Lighthouse.IpAddress.to_string(ip)}"
+  def handle_info({:udp, _socket, ip, _port, data}, state) do
+     Logger.debug "receive message '#{data}' from #{Lighthouse.IpAddress.to_string(ip)}"
      Lighthouse.Registry.register_node(ip)
     {:noreply, state}
   end
@@ -27,23 +27,23 @@ defmodule Lighthouse.Ip4UdpBroadcast do
   use GenServer
   require Logger
 
-  def start_link(port, address \\ '255.255.255.255') do
-    GenServer.start_link(__MODULE__, {port, address}, [name: __MODULE__])
+  def start_link(state) do
+    GenServer.start_link(__MODULE__, state, [name: __MODULE__])
   end
 
   def send() do
     GenServer.cast(__MODULE__, :broadcast)
   end
 
-  def init({port, address}) do
+  def init({port, payload, address}) do
     Logger.info "start #{__MODULE__} port=#{port}"
     {:ok, socket} = :gen_udp.open(0, [{:broadcast, true}])
-    {:ok, {socket, {port, address} } }
+    {:ok, {socket, {port, payload, address} } }
   end
 
-  def handle_cast(:broadcast, {socket, {port, address}} = state) do
+  def handle_cast(:broadcast, {socket, {port, payload, address}} = state) do
     Logger.debug "send broadcast to #{address}"
-    :gen_udp.send(socket, address, port, "hello")
+    :gen_udp.send(socket, to_charlist(address), port, payload)
     {:noreply, state}
   end
 end

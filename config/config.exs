@@ -33,6 +33,9 @@ config :lighthouse,
    server: :true,
    broadcast: :true,
    udp_port: 9998,
-   interval: 5000
+   broadcast_interval: 5000,
+   broadcast_payload: "lighthouse::node",
+   broadcast_address: "255.255.255.255",
+   node_lifespan: 30000
 
 import_config "#{Mix.env}.exs"

@@ -13,9 +13,11 @@ defmodule Lighthouse.Supervisor do
   defp add_broadcast_worker(worker, udp_port) do
     do_broadcast = Application.get_env(:lighthouse, :broadcast, true)
     if do_broadcast do
-      interval = Application.get_env(:lighthouse, :interval, 10000)
+      interval = Application.get_env(:lighthouse, :broadcast_interval, 10000)
+      payload = Application.get_env(:lighthouse, :broadcast_playload, "lighthouse::node")
+      broadcast_address = Application.get_env(:lighthouse, :broadcast_address, "255.255.255.255")
       worker ++ [
-        {Lighthouse.Ip4UdpBroadcast, udp_port},
+        {Lighthouse.Ip4UdpBroadcast, {udp_port, payload, broadcast_address}},
         {Lighthouse.Scheduler, {interval, &Lighthouse.Ip4UdpBroadcast.send/0}} ]
     else
       worker
@@ -24,10 +26,9 @@ defmodule Lighthouse.Supervisor do
 
   def init(:ok) do
     udp_port = Application.get_env(:lighthouse, :udp_port, 9998)
-    node_expiration_interval = Application.get_env(:lighthouse, :node_expiration_interval, 30000)
-    registry_cleanup_interval = Application.get_env(:lighthouse, :registry_cleanup_interval, 2000)
+    node_lifespan = Application.get_env(:lighthouse, :node_lifespan, 30000)
 
-    worker = [{Lighthouse.Registry, {node_expiration_interval, registry_cleanup_interval}} ]
+    worker = [{Lighthouse.Registry, {node_lifespan}} ]
       |> add_server_worker(udp_port)
       |> add_broadcast_worker(udp_port)
     Supervisor.init(worker, strategy: :one_for_one)

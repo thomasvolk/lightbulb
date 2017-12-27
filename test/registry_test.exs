@@ -2,24 +2,32 @@ defmodule RegistryTest do
   use ExUnit.Case
   doctest Lighthouse.Registry
 
-  test "the Lighthouse.Registry should manage ip addresses" do
-    assert Lighthouse.subscribe()
-    assert Lighthouse.Registry.get_nodes() == %{}
-    Lighthouse.Registry.register_node({10, 1, 1, 50})
-    %{ {10, 1, 1, 50} => _ } = Lighthouse.Registry.get_nodes()
-    assert Lighthouse.Registry.get_nodes() == Lighthouse.get_nodes()
-    assert Lighthouse.unsubscribe()
-    Lighthouse.Registry.register_node({10, 1, 1, 51})
-    %{ {10, 1, 1, 50} => _, {10, 1, 1, 51} => _ } = Lighthouse.Registry.get_nodes()
-
+  def check_for_message(_message, timeout \\ 1000) do
     result = receive do
-      {:updated, %{ {10, 1, 1, 50} => _ }} ->
+      _message ->
         :ok
     after
-      100 ->
+      timeout ->
         assert false, "timeout! expected message not reached"
     end
     assert result == :ok
+  end
+
+  test "the Lighthouse.Registry should manage ip addresses" do
+    assert Lighthouse.subscribe()
+    assert Lighthouse.Registry.get_nodes() == []
+    Lighthouse.Registry.register_node({10, 1, 1, 50})
+    [ {10, 1, 1, 50} ] = Lighthouse.Registry.get_nodes()
+    assert Lighthouse.Registry.get_nodes() == Lighthouse.get_nodes()
+
+    check_for_message({:lighthouse_nodes_updated, [ {10, 1, 1, 50} ] })
+    check_for_message({:lighthouse_nodes_updated, [ ] })
+
+    assert Lighthouse.unsubscribe()
+    Lighthouse.Registry.register_node({10, 1, 1, 51})
+    [ {10, 1, 1, 51} ] = Lighthouse.Registry.get_nodes()
+    Lighthouse.Registry.register_node({10, 1, 1, 52})
+    [ {10, 1, 1, 51}, {10, 1, 1, 52} ] = Lighthouse.Registry.get_nodes()
   end
 
   test "the Lighthouse.Registry sould filter exired nodes" do
