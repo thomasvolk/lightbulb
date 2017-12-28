@@ -4,8 +4,7 @@ defmodule Lighthouse.Udp do
   end
 
   def listen(port) do
-    {:ok, socket} = :gen_udp.open(port)
-    socket
+    {:ok, _socket} = :gen_udp.open(port)
   end
 
   def broadcast_connect() do

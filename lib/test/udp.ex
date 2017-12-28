@@ -3,7 +3,6 @@ defmodule Lighthouse.Test.UdpMock do
   end
 
   def listen(_port) do
-    'socket'
   end
 
   def broadcast_connect() do

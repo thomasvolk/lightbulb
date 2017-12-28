@@ -9,8 +9,8 @@ defmodule Lighthouse.Ip4UdpServer do
 
   def init({port}) do
     Logger.info "start #{__MODULE__} port=#{port}"
-    socket = @udp.listen(port)
-    {:ok, {socket, port } }
+    @udp.listen(port)
+    {:ok, {} }
   end
 
   def handle_info({:udp, _socket, ip, _port, data}, state) do
