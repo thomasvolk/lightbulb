@@ -32,6 +32,7 @@ use Mix.Config
 config :lighthouse,
    server: :true,
    broadcast: :true,
+   udp_api: Lighthouse.Udp,
    udp_port: 9998,
    broadcast_interval: 5000,
    broadcast_payload: "lighthouse::node",
