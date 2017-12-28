@@ -35,7 +35,7 @@ config :lighthouse,
    udp_api: Lighthouse.Udp,
    udp_port: 9998,
    broadcast_interval: 5000,
-   broadcast_payload: "lighthouse::node",
+   broadcast_message: "lighthouse::node",
    broadcast_address: "255.255.255.255",
    node_lifespan: 30000
 

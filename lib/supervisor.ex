@@ -6,16 +6,16 @@ defmodule Lighthouse.Supervisor do
   end
 
   defp add_server_worker(worker, udp_port) do
-    start_server = Application.get_env(:lighthouse, :server, true)
+    start_server = Application.get_env(:lighthouse, :server)
     if start_server, do: worker ++ [ {Lighthouse.Ip4UdpServer, udp_port} ], else: worker
   end
 
   defp add_broadcast_worker(worker, udp_port) do
-    do_broadcast = Application.get_env(:lighthouse, :broadcast, true)
+    do_broadcast = Application.get_env(:lighthouse, :broadcast)
     if do_broadcast do
-      interval = Application.get_env(:lighthouse, :broadcast_interval, 10000)
-      payload = Application.get_env(:lighthouse, :broadcast_playload, "lighthouse::node")
-      broadcast_address = Application.get_env(:lighthouse, :broadcast_address, "255.255.255.255")
+      interval = Application.get_env(:lighthouse, :broadcast_interval)
+      payload = Application.get_env(:lighthouse, :broadcast_message)
+      broadcast_address = Application.get_env(:lighthouse, :broadcast_address)
       worker ++ [ {Lighthouse.Ip4UdpBroadcast, {udp_port, payload, broadcast_address, interval}} ]
     else
       worker
@@ -23,8 +23,8 @@ defmodule Lighthouse.Supervisor do
   end
 
   def init(:ok) do
-    udp_port = Application.get_env(:lighthouse, :udp_port, 9998)
-    node_lifespan = Application.get_env(:lighthouse, :node_lifespan, 30000)
+    udp_port = Application.get_env(:lighthouse, :udp_port)
+    node_lifespan = Application.get_env(:lighthouse, :node_lifespan)
 
     worker = [{Lighthouse.Registry, {node_lifespan}} ]
       |> add_server_worker(udp_port)
