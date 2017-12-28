@@ -24,19 +24,12 @@ defmodule Lighthouse.Registry do
     GenServer.cast(__MODULE__, {:register_node, ip, data})
   end
 
+  def purge() do
+    GenServer.call(__MODULE__, {:purge})
+  end
+
   def filter_expired(nodes, expiration_interval) do
     nodes |> Enum.filter( fn {_k, {_d, date}} -> DateTime.diff(DateTime.utc_now(), date, :milliseconds) <= expiration_interval end) |> Map.new
-  end
-
-  defp to_node_list(nodes) do
-    nodes |> Map.to_list |> Enum.map(fn {ip, {data, _time}} -> {ip, data} end ) |> Enum.sort
-  end
-
-  defp publish_event(listener, nodes, new_nodes) do
-    delta = map_size(nodes) - map_size(new_nodes)
-    if delta != 0 do
-      listener |> Enum.map(fn pid -> send(pid, {:lighthouse_nodes_updated, to_node_list(new_nodes) }) end)
-    end
   end
 
   def init({node_lifespan}) do
@@ -57,6 +50,10 @@ defmodule Lighthouse.Registry do
     {:reply, length(new_listener) < length(listener), { nodes, new_listener, node_lifespan } }
   end
 
+  def handle_call({:purge}, _from, {_nodes, listener, node_lifespan}) do
+    {:reply, :ok, { Map.new, listener, node_lifespan } }
+  end
+
   def handle_info({:remove_expired}, {nodes, listener, node_lifespan}) do
     filtered_nodes = filter_expired(nodes, node_lifespan)
     publish_event(listener, nodes, filtered_nodes)
@@ -69,4 +66,16 @@ defmodule Lighthouse.Registry do
     publish_event(listener, nodes, new_nodes)
     {:noreply, { new_nodes, listener, node_lifespan } }
   end
+
+  defp publish_event(listener, nodes, new_nodes) do
+    delta = map_size(nodes) - map_size(new_nodes)
+    if delta != 0 do
+      listener |> Enum.map(fn pid -> send(pid, {:lighthouse_nodes_updated, to_node_list(new_nodes) }) end)
+    end
+  end
+
+  defp to_node_list(nodes) do
+    nodes |> Map.to_list |> Enum.map(fn {ip, {data, _time}} -> {ip, data} end ) |> Enum.sort
+  end
+
 end

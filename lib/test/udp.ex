@@ -6,6 +6,6 @@ defmodule Lighthouse.Test.UdpMock do
   end
 
   def broadcast_connect() do
-    'socket'
+    :socket
   end
 end
