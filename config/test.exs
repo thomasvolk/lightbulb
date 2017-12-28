@@ -1,8 +1,7 @@
 use Mix.Config
 
 config :lighthouse,
-   server: :false,
-   broadcast: :false,
+   udp_api: Lighthouse.Test.UdpMock,
    node_lifespan: 100
 
 config :logger, level: :warn

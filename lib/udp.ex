@@ -12,5 +12,4 @@ defmodule Lighthouse.Udp do
     {:ok, socket} = :gen_udp.open(0, [{:broadcast, true}])
     socket
   end
-
 end

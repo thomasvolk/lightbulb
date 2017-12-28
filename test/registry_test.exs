@@ -13,7 +13,7 @@ defmodule RegistryTest do
     assert result == :ok
   end
 
-  test "the Lighthouse.Registry should manage ip addresses" do
+  test "the Lighthouse.Registry should add nodes and remove expired nodes" do
     assert Lighthouse.subscribe()
     assert Lighthouse.Registry.get_nodes() == []
     Lighthouse.Registry.register_node({10, 1, 1, 50}, "from::test")
