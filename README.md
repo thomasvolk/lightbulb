@@ -2,6 +2,9 @@
 
 Lighthouse is a library for sending utp broadcasts to find other nodes in the same network.
 
+[![Build Status](https://travis-ci.org/thomasvolk/lighthouse.svg?branch=master)](https://travis-ci.org/thomasvolk/lighthouse)
+[![Coverage Status](https://coveralls.io/repos/github/thomasvolk/lighthouse/badge.svg?branch=master)](https://coveralls.io/github/thomasvolk/lighthouse?branch=master)
+
 ## Installation
 
 The package can be installed by adding `lighthouse` to your list of dependencies in `mix.exs`:
