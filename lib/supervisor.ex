@@ -6,7 +6,7 @@ defmodule Lighthouse.Supervisor do
   end
 
   defp server_worker_spec(udp_port) do
-    {Lighthouse.Ip4UdpServer, udp_port}
+    {Lighthouse.UdpServer, udp_port}
   end
 
   defp broadcast_worker_spec(udp_port) do
@@ -14,7 +14,7 @@ defmodule Lighthouse.Supervisor do
     broadcast_message = Application.get_env(:lighthouse, :broadcast_message)
     broadcast_address = Application.get_env(:lighthouse, :broadcast_address)
 
-    {Lighthouse.Ip4UdpBroadcast, {udp_port, broadcast_message, broadcast_address, broadcast_interval}}
+    {Lighthouse.UdpBroadcast, {udp_port, broadcast_message, broadcast_address, broadcast_interval}}
   end
 
   def init(:ok) do
