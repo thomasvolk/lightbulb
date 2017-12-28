@@ -19,10 +19,6 @@ defmodule Lighthouse.Registry do
     GenServer.call(__MODULE__, {:unsubscribe})
   end
 
-  def cleanup() do
-    GenServer.cast(__MODULE__, {:cleanup})
-  end
-
   def register_node(ip, data) do
     GenServer.cast(__MODULE__, {:register_node, ip, data})
   end
@@ -60,7 +56,7 @@ defmodule Lighthouse.Registry do
     {:reply, length(new_listener) < length(listener), { nodes, new_listener, node_lifespan } }
   end
 
-  def handle_info(:cleanup, {nodes, listener, node_lifespan}) do
+  def handle_info({:cleanup}, {nodes, listener, node_lifespan}) do
     filtered_nodes = filter_expired(nodes, node_lifespan)
     publish_event(listener, nodes, filtered_nodes)
     {:noreply, { filtered_nodes, listener, node_lifespan } }
@@ -68,7 +64,7 @@ defmodule Lighthouse.Registry do
 
   def handle_cast({:register_node, ip, data}, {nodes, listener, node_lifespan}) do
     new_nodes = Map.put(nodes, ip, {data, DateTime.utc_now()})
-    Process.send_after(self(), :cleanup, node_lifespan + 10)
+    Process.send_after(self(), {:cleanup}, node_lifespan + 10)
     publish_event(listener, nodes, new_nodes)
     {:noreply, { new_nodes, listener, node_lifespan } }
   end
