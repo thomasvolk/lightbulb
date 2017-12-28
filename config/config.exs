@@ -30,8 +30,6 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 
 config :lighthouse,
-   server: :true,
-   broadcast: :true,
    udp_api: Lighthouse.Udp,
    udp_port: 9998,
    broadcast_interval: 5000,

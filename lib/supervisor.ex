@@ -21,12 +21,9 @@ defmodule Lighthouse.Supervisor do
     udp_port = Application.get_env(:lighthouse, :udp_port)
     node_lifespan = Application.get_env(:lighthouse, :node_lifespan)
 
-    start_server = Application.get_env(:lighthouse, :server)
-    do_broadcast = Application.get_env(:lighthouse, :broadcast)
-
-    worker = [{Lighthouse.Registry, {node_lifespan}} ]
-    worker = if start_server, do: worker ++ [ server_worker_spec(udp_port) ], else: worker
-    worker = if do_broadcast, do: worker ++ [ broadcast_worker_spec(udp_port) ], else: worker
+    worker = [ {Lighthouse.Registry, {node_lifespan}},
+               server_worker_spec(udp_port),
+               broadcast_worker_spec(udp_port) ]
 
     Supervisor.init(worker, strategy: :one_for_one)
   end
