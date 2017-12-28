@@ -7,8 +7,8 @@ defmodule RegistryTest do
     Lighthouse.subscribe()
 
     on_exit fn ->
-     Lighthouse.unsubscribe()
-   end
+      Lighthouse.unsubscribe()
+    end
   end
 
   test "the Lighthouse.Registry should add nodes and remove expired nodes" do

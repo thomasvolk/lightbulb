@@ -1,5 +1,6 @@
 defmodule Lighthouse.Test.UdpMock do
-  def broadcast(_port, _address, _socket, _payload) do
+  def broadcast(port, address, socket, payload) do
+    Lighthouse.Test.Monitor.send({port, address, socket, payload})
   end
 
   def listen(_port) do
