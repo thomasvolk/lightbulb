@@ -1,7 +1,7 @@
 defmodule Lighthouse do
   use Application
 
-  @udp_api Lighthouse.Udp
+  @udp_api Lighthouse.UdpIpv4
   def udp_api(), do: @udp_api
 
   def start(_type, []) do

@@ -1,4 +1,12 @@
 defmodule Lighthouse.Udp do
+  @callback broadcast(number, String.t, port, String.t) :: nil
+  @callback listen(port) :: nil
+  @callback broadcast_connect() :: port
+end
+
+defmodule Lighthouse.UdpIpv4 do
+  @behaviour Lighthouse.Udp
+
   def broadcast(port, address, socket, payload) do
     :gen_udp.send(socket, to_charlist(address), port, payload)
   end
@@ -14,8 +22,10 @@ defmodule Lighthouse.Udp do
 end
 
 defmodule Lighthouse.UdpIpv6 do
+  @behaviour Lighthouse.Udp
+
   def broadcast(port, address, socket, payload) do
-    Lighthouse.Udp.broadcast(port, address, socket, payload)
+    Lighthouse.UdpIpv4.broadcast(port, address, socket, payload)
   end
 
   def listen(port) do
