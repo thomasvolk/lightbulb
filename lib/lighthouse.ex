@@ -1,6 +1,9 @@
 defmodule Lighthouse do
   use Application
 
+  @udp_api Lighthouse.Udp
+  def udp_api(), do: @udp_api
+
   def start(_type, []) do
     Lighthouse.Supervisor.start_link()
   end

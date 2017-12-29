@@ -10,6 +10,11 @@ Lighthouse is a library for sending utp broadcasts to find other nodes in the sa
 The package can be installed by adding `lighthouse` to your list of dependencies in `mix.exs`:
 
 ```elixir
+
+def application do
+  [applications: [:lighthouse]]
+end
+
 def deps do
   [
     {:lighthouse, git: "https://github.com/thomasvolk/lighthouse.git", tag: "master"}

@@ -1,7 +1,7 @@
 defmodule Lighthouse.UdpServer do
   use GenServer
   require Logger
-  @udp Application.get_env(:lighthouse, :udp_api)
+  @udp Application.get_env(:lighthouse, :udp_api, Lighthouse.udp_api())
 
   def start_link(port) do
     GenServer.start_link(__MODULE__, {port}, [name: __MODULE__])
