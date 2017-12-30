@@ -28,7 +28,9 @@ defmodule Lighthouse.Registry do
   end
 
   def filter_expired(nodes, expiration_interval) do
-    nodes |> Enum.filter( fn {_k, {_d, date}} -> DateTime.diff(DateTime.utc_now(), date, :milliseconds) <= expiration_interval end) |> Map.new
+    node_expired = fn {_k, {_d, date}} -> DateTime.diff(DateTime.utc_now(), date, :milliseconds) <= expiration_interval end
+    nodes |> Enum.filter( node_expired )
+          |> Map.new
   end
 
   def init({node_lifespan}) do
