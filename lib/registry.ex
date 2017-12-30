@@ -34,6 +34,7 @@ defmodule Lighthouse.Registry do
   end
 
   def init({node_lifespan}) do
+    Process.send_after(self(), {:remove_expired}, node_lifespan)
     {:ok, {Map.new, [], node_lifespan} }
   end
 
@@ -64,7 +65,6 @@ defmodule Lighthouse.Registry do
 
   def handle_cast({:register_node, ip, data}, {nodes, listener, node_lifespan}) do
     new_nodes = Map.put(nodes, ip, {data, DateTime.utc_now()})
-    Process.send_after(self(), {:remove_expired}, node_lifespan)
     publish_event(listener, nodes, new_nodes)
     {:noreply, { new_nodes, listener, node_lifespan } }
   end
