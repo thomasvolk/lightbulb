@@ -2,7 +2,6 @@
 defmodule Lighthouse.Registry do
   use GenServer
   require Logger
-  @extra_duration_for_expiration_check 10
 
   def start_link(state) do
     GenServer.start_link(__MODULE__, state, [name: __MODULE__])
@@ -57,12 +56,13 @@ defmodule Lighthouse.Registry do
   def handle_info({:remove_expired}, {nodes, listener, node_lifespan}) do
     filtered_nodes = filter_expired(nodes, node_lifespan)
     publish_event(listener, nodes, filtered_nodes)
+    Process.send_after(self(), {:remove_expired}, node_lifespan)
     {:noreply, { filtered_nodes, listener, node_lifespan } }
   end
 
   def handle_cast({:register_node, ip, data}, {nodes, listener, node_lifespan}) do
     new_nodes = Map.put(nodes, ip, {data, DateTime.utc_now()})
-    Process.send_after(self(), {:remove_expired}, node_lifespan + @extra_duration_for_expiration_check)
+    Process.send_after(self(), {:remove_expired}, node_lifespan)
     publish_event(listener, nodes, new_nodes)
     {:noreply, { new_nodes, listener, node_lifespan } }
   end
