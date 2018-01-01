@@ -25,3 +25,13 @@ end
 defmodule Lighthouse.IpAddress do
   def to_string(ip), do: Kernel.to_string(:inet.ntoa(ip))
 end
+
+defmodule Lighthouse.Env do
+  @default_udp_port 9998
+  def get_udp_port() do
+     case System.get_env("LIGHTHOUSE_UDP_PORT") do
+       nil -> Application.get_env(:lighthouse, :udp_port, @default_udp_port)
+       val -> String.to_integer(val)
+     end
+  end
+end

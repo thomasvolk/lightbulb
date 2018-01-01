@@ -1,7 +1,6 @@
 defmodule Lighthouse.Supervisor do
   use Supervisor
 
-  @udp_port 9998
   @broadcast_interval 5000
   @broadcast_message "lighthouse::node"
   @broadcast_address "255.255.255.255"
@@ -24,7 +23,7 @@ defmodule Lighthouse.Supervisor do
   end
 
   def init(:ok) do
-    udp_port = Application.get_env(:lighthouse, :udp_port, @udp_port)
+    udp_port = Lighthouse.Env.get_udp_port()
     node_lifespan = Application.get_env(:lighthouse, :node_lifespan, @node_lifespan)
 
     worker = [ {Lighthouse.Registry, {node_lifespan}},
