@@ -1,10 +1,6 @@
 defmodule Lighthouse.Supervisor do
   use Supervisor
-
-  @broadcast_interval 5000
-  @broadcast_message "lighthouse::node"
-  @broadcast_address "255.255.255.255"
-  @node_lifespan 30000
+  alias Lighthouse.Properties
 
   def start_link() do
     Supervisor.start_link(__MODULE__, :ok, name: __MODULE__)
@@ -15,16 +11,16 @@ defmodule Lighthouse.Supervisor do
   end
 
   defp broadcast_worker_spec(udp_port) do
-    broadcast_interval = Application.get_env(:lighthouse, :broadcast_interval, @broadcast_interval)
-    broadcast_message = Application.get_env(:lighthouse, :broadcast_message, @broadcast_message)
-    broadcast_address = Application.get_env(:lighthouse, :broadcast_address, @broadcast_address)
+    broadcast_interval = Properties.broadcast_interval()
+    broadcast_message = Properties.broadcast_message()
+    broadcast_address = Properties.broadcast_address()
 
     {Lighthouse.UdpBroadcast, {udp_port, broadcast_message, broadcast_address, broadcast_interval}}
   end
 
   def init(:ok) do
-    udp_port = Lighthouse.Properties.get_udp_port()
-    node_lifespan = Application.get_env(:lighthouse, :node_lifespan, @node_lifespan)
+    udp_port = Properties.udp_port()
+    node_lifespan = Properties.node_lifespan()
 
     worker = [ {Lighthouse.Registry, {node_lifespan}},
                server_worker_spec(udp_port),
