@@ -23,7 +23,7 @@ defmodule Lighthouse.Supervisor do
   end
 
   def init(:ok) do
-    udp_port = Lighthouse.Env.get_udp_port()
+    udp_port = Lighthouse.Properties.get_udp_port()
     node_lifespan = Application.get_env(:lighthouse, :node_lifespan, @node_lifespan)
 
     worker = [ {Lighthouse.Registry, {node_lifespan}},
