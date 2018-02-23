@@ -1,7 +1,7 @@
 use Mix.Config
 
-config :lighthouse,
-   udp_api: Lighthouse.Test.UdpMock,
+config :light,
+   udp_api: Light.Test.UdpMock,
    node_lifespan: 100,
    broadcast_interval: 10
 

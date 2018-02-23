@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure your application as:
 #
-#     config :lighthouse, key: :value
+#     config :light, key: :value
 #
 # and access this configuration in your application as:
 #
-#     Application.get_env(:lighthouse, :key)
+#     Application.get_env(:light, :key)
 #
 # You can also configure a 3rd-party app:
 #
@@ -29,11 +29,11 @@ use Mix.Config
 #
 #     import_config "#{Mix.env}.exs"
 
-config :lighthouse,
-   udp_api: Lighthouse.UdpIpv4,
+config :light,
+   udp_api: Light.UdpIpv4,
    udp_port: 9998,
    broadcast_interval: 5000,
-   broadcast_message: "lighthouse::node",
+   broadcast_message: "light::node",
    broadcast_address: "255.255.255.255",
    node_lifespan: 30000
 

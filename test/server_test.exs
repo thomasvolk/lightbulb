@@ -1,21 +1,21 @@
 defmodule UdpServerTest do
   use ExUnit.Case
-  doctest Lighthouse.UdpServer
+  doctest Light.UdpServer
 
   setup do
-    Lighthouse.Registry.purge()
-    Lighthouse.subscribe()
+    Light.Registry.purge()
+    Light.subscribe()
 
     on_exit fn ->
-     Lighthouse.unsubscribe()
+     Light.unsubscribe()
    end
   end
 
-  test "the Lighthouse.UdpServer should register nodes by receiving an udp event" do
-    pid = GenServer.whereis(Lighthouse.UdpServer)
+  test "the Light.UdpServer should register nodes by receiving an udp event" do
+    pid = GenServer.whereis(Light.UdpServer)
     send pid, {:udp, :socket, {1,2,3,4}, 99999, 'test::udp::event'}
 
-    assert_receive {:lighthouse_nodes_updated, [ {{1, 2, 3, 4}, "test::udp::event"} ] }
+    assert_receive {:light_nodes_updated, [ {{1, 2, 3, 4}, "test::udp::event"} ] }
   end
 
 end

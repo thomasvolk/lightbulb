@@ -1,4 +1,4 @@
-defmodule Lighthouse.Test.Monitor do
+defmodule Light.Test.Monitor do
   use GenServer
 
   def start_link(listener) do

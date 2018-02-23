@@ -1,8 +1,8 @@
-defmodule Lighthouse.UdpServer do
+defmodule Light.UdpServer do
   use GenServer
   require Logger
-  alias Lighthouse.Properties
-  alias Lighthouse.Registry
+  alias Light.Properties
+  alias Light.Registry
 
   def start_link(port) do
     GenServer.start_link(__MODULE__, {port}, [name: __MODULE__])
@@ -16,7 +16,7 @@ defmodule Lighthouse.UdpServer do
 
   def handle_info({:udp, _socket, ip, _port, data}, state) do
     msg = to_string(data)
-    Logger.debug "receive message '#{msg}' from #{Lighthouse.IpAddress.to_string(ip)}"
+    Logger.debug "receive message '#{msg}' from #{Light.IpAddress.to_string(ip)}"
     Registry.register_node(ip, msg)
     {:noreply, state}
   end
