@@ -1,7 +1,7 @@
-defmodule Light.UdpBroadcast do
+defmodule Lightbulb.UdpBroadcast do
   use GenServer
   require Logger
-  alias Light.Properties
+  alias Lightbulb.Properties
 
   def start_link(state) do
     GenServer.start_link(__MODULE__, state, [name: __MODULE__])

@@ -1,11 +1,11 @@
-defmodule Light.Properties do
-  @namespace :light
+defmodule Lightbulb.Properties do
+  @namespace :lightbulb
   @udp_port { :udp_port, 9998 }
   @broadcast_address { :broadcast_address, "255.255.255.255" }
-  @broadcast_message { :broadcast_message, "light::node" }
+  @broadcast_message { :broadcast_message, "lightbulb::node" }
   @broadcast_interval { :broadcast_interval, 5000 }
   @node_lifespan { :node_lifespan, 30000 }
-  @udp_api { :udp_api, Light.UdpIpv4 }
+  @udp_api { :udp_api, Lightbulb.UdpIpv4 }
 
   def to_module(str) do
     mod_name = if String.starts_with?(str, "Elixir"), do: str, else: "Elixir.#{str}"

@@ -1,9 +1,9 @@
-defmodule Light.Mixfile do
+defmodule Lightbulb.Mixfile do
   use Mix.Project
 
   def project do
     [
-      app: :light,
+      app: :lightbulb,
       version: "0.1.0",
       elixir: "~> 1.5",
       start_permanent: Mix.env == :prod,
@@ -15,7 +15,7 @@ defmodule Light.Mixfile do
 
   def application do
     [
-      mod: {Light, []},
+      mod: {Lightbulb, []},
       extra_applications: [:logger]
     ]
   end

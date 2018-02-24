@@ -1,11 +1,11 @@
-defmodule Light.Udp do
+defmodule Lightbulb.Udp do
   @callback broadcast(number, String.t, port, String.t) :: nil
   @callback listen(port) :: nil
   @callback broadcast_connect() :: port
 end
 
-defmodule Light.UdpIpv4 do
-  @behaviour Light.Udp
+defmodule Lightbulb.UdpIpv4 do
+  @behaviour Lightbulb.Udp
 
   def broadcast(port, address, socket, payload) do
     :gen_udp.send(socket, to_charlist(address), port, payload)
@@ -21,11 +21,11 @@ defmodule Light.UdpIpv4 do
   end
 end
 
-defmodule Light.UdpIpv6 do
-  @behaviour Light.Udp
+defmodule Lightbulb.UdpIpv6 do
+  @behaviour Lightbulb.Udp
 
   def broadcast(port, address, socket, payload) do
-    Light.UdpIpv4.broadcast(port, address, socket, payload)
+    Lightbulb.UdpIpv4.broadcast(port, address, socket, payload)
   end
 
   def listen(port) do

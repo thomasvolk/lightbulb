@@ -1,4 +1,4 @@
-defmodule Light.Test.Monitor do
+defmodule Lightbulb.Test.Monitor do
   use GenServer
 
   def start_link(listener) do

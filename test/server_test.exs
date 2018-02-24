@@ -1,21 +1,21 @@
 defmodule UdpServerTest do
   use ExUnit.Case
-  doctest Light.UdpServer
+  doctest Lightbulb.UdpServer
 
   setup do
-    Light.Registry.purge()
-    Light.subscribe()
+    Lightbulb.Registry.purge()
+    Lightbulb.subscribe()
 
     on_exit fn ->
-     Light.unsubscribe()
+     Lightbulb.unsubscribe()
    end
   end
 
-  test "the Light.UdpServer should register nodes by receiving an udp event" do
-    pid = GenServer.whereis(Light.UdpServer)
+  test "the Lightbulb.UdpServer should register nodes by receiving an udp event" do
+    pid = GenServer.whereis(Lightbulb.UdpServer)
     send pid, {:udp, :socket, {1,2,3,4}, 99999, 'test::udp::event'}
 
-    assert_receive {:light_nodes_updated, [ {{1, 2, 3, 4}, "test::udp::event"} ] }
+    assert_receive {:lightbulb_nodes_updated, [ {{1, 2, 3, 4}, "test::udp::event"} ] }
   end
 
 end

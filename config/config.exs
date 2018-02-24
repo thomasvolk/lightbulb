@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure your application as:
 #
-#     config :light, key: :value
+#     config :lightbulb, key: :value
 #
 # and access this configuration in your application as:
 #
-#     Application.get_env(:light, :key)
+#     Application.get_env(:lightbulb, :key)
 #
 # You can also configure a 3rd-party app:
 #
@@ -29,11 +29,11 @@ use Mix.Config
 #
 #     import_config "#{Mix.env}.exs"
 
-config :light,
-   udp_api: Light.UdpIpv4,
+config :lightbulb,
+   udp_api: Lightbulb.UdpIpv4,
    udp_port: 9998,
    broadcast_interval: 5000,
-   broadcast_message: "light::node",
+   broadcast_message: "lightbulb::node",
    broadcast_address: "255.255.255.255",
    node_lifespan: 30000
 

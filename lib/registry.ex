@@ -1,5 +1,5 @@
 
-defmodule Light.Registry do
+defmodule Lightbulb.Registry do
   use GenServer
   require Logger
 
@@ -72,7 +72,7 @@ defmodule Light.Registry do
   defp publish_event(listener, nodes, new_nodes) do
     delta = map_size(nodes) - map_size(new_nodes)
     if delta != 0 do
-      listener |> Enum.map(fn pid -> send(pid, {:light_nodes_updated, to_node_list(new_nodes) }) end)
+      listener |> Enum.map(fn pid -> send(pid, {:lightbulb_nodes_updated, to_node_list(new_nodes) }) end)
     end
   end
 
