@@ -22,7 +22,7 @@ defmodule Lightbulb.Mixfile do
 
   defp deps do
     [
-      {:excoveralls, "~> 0.7",   only: :test}
+      {:excoveralls, "~> 0.9",   only: :test}
     ]
   end
 end
